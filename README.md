@@ -5,7 +5,7 @@
 
 2. Настройка lighttpd
 
-* В modules.conf (или lighttpd.conf, если нет include modules.conf) добавить или раскомментировать строки:
+* В modules.conf (или lighttpd.conf, если нет include "modules.conf") добавить или раскомментировать строки:
 ```
 server.modules = (
     "mod_cgi",
