@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="css/sample.css" />
+    <title>IMS.WebAPI Sample</title>
+</head>
+
+<body>
+    <div id="wrapper">
+    <header>
+        <h1>IMS.WebAPI Sample</h1>
+    </header>
+
+    <div id="main">
+        <form action="/cgi-bin/cmd.cgi" method="GET">
+            <p>
+                <span>Command: </span>
+                <select id="cmd" name="q">
+                  <option value="report" selected="selected">Get Report(s)</option>
+                  <option value="badcmd">Generate Error</option>
+                </select>
+            </p>
+            <div id="opt" class="visible">
+                <p>
+                    <span>DateTime: </span>
+                    <input id="date" name="date" value="YYMMDD_hhmmss" />
+                </p>
+                <p>
+                    <span>Report Extension: </span>
+                    <select id="ext" name="ext">
+                      <option value="txt" selected="selected">.txt</option>
+                      <option value="xml">.xml</option>
+                      <option value="pdf">.pdf</option>
+                    </select>
+                </p>
+            </div>
+            <p>
+                <span>&nbsp;</span>
+                <input type="submit" value="Send" />
+            </p>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2020 Tsygankin Alexander</p>
+    </footer>
+    </div>
+
+    <script>
+        document.getElementById("cmd").onchange = function() 
+        {
+            cmd = this.options[this.selectedIndex].value;
+            document.getElementById("opt").style.display = cmd == "report" ? "block" : "none";
+
+            datField = document.getElementById("date");
+            extField = document.getElementById("ext");
+            if (cmd == "report")
+                datField.name = "date", extField.name = "ext";
+            else
+                datField.name = extField.name = "";
+        }
+    </script>
+</body>
+
+</html>
