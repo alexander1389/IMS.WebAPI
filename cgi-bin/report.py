@@ -2,7 +2,7 @@ import sys
 import time
 
 from datetime import datetime
-from os import listdir, stat
+from os import listdir, stat, path as rpath
 from os.path import isfile, join, splitext, getsize, basename
 from shutil import copyfileobj
 from zipfile import ZipFile
@@ -50,6 +50,9 @@ def get_replist(path, ext = DEFAULT_EXT):
     :returns: a dictionary containing pairs of absolute filename and creation time of the report
     :rtype: dict
     """
+    if not rpath.exists(path):
+        return {}
+
     return { f: get_ctime(f) for f in (join(path, f) for f in listdir(path)) 
              if isfile(f) and splitext(f)[1] == ext }
 
@@ -130,23 +133,26 @@ def get_last_report(path, ext = DEFAULT_EXT):
     with open(last_report,'rb') as file:
         copyfileobj(file, sys.stdout.buffer)
 
-# -------------------------------------------
 
-
-
-TEST_PATH = '/tmp'
 if __name__ == '__main__':
-    print("TEST...")
-    """
-    d = get_replist(TEST_PATH, '.pdf')
-    for k, v in d.items():
-        print("%s - %s" % (k, v))
+    if len(sys.argv) < 4:
+        sys.exit()
 
-    l = filter_by_date(d, '2004')
-    print('\nFOUND:\n')
-    print(l)
+    TEST_PTH = sys.argv[1]
+    TEST_EXT = sys.argv[2]
+    TEST_DAT = sys.argv[3]
 
-    rep = get_reports_by_date(TEST_PATH, '2004', '.pdf')
-    print(rep)
-    """
-    get_last_report(TEST_PATH, '.txt')
+    print('\nget_rep_list():')
+    print('---------------\n')
+    reps = get_replist(TEST_PTH, TEST_EXT)
+    for k, v in reps.items():
+        print("%s - %s" % (v, k))
+    print('---------------\n')
+
+    print('filter_by_date():')
+    print('-----------------\n')
+    filtered = filter_by_date(reps, TEST_DAT)
+    for f in filtered:
+        print(f)
+    print('-----------------\n')
+
