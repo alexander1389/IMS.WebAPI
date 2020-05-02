@@ -1,20 +1,33 @@
 #!/usr/bin/python
 
 import cgi
-import cgitb
-
-cgitb.enable()
+# import cgitb
 
 from bad_request import bad_request
 from report import report
 
-actions = { 
-    'report' : report
+
+def field_storage_to_dict(fs):
+    """Get a plain dictionary from FieldStorage object
+
+    :param fs: The FieldStorage object
+    :type fs: FieldStorage
+    :returns: Plain dictionary of FieldStorage parameters
+    :rtype: dict
+    """
+    return {k: fs[k].value for k in fs.keys()}
+
+
+# cgitb.enable()
+
+actions = {
+    'report': report
 }
 
-if __name__ == '__main__':
-    form = cgi.FieldStorage()
+params = field_storage_to_dict(cgi.FieldStorage())
+q = params['q'] if 'q' in params else None
 
-    q = form['q'].value if 'q' in form else None
-
-    reply = actions[q]() if q in actions.keys() else bad_request() # TODO: rv + bad_req param + actions param
+if q in actions.keys():
+    actions[q](**params)
+else:
+    bad_request(msg='Wrong Command')
