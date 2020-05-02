@@ -32,12 +32,14 @@ def report(**kwargs):
     else:
         get_reports_by_date(path, date, ext)
 
+
 def get_ctime(path):
-    """ Get file creation time 
+    """ Get file creation time
 
     :param path: The file location path
     :type path: str
-    :returns: a file creation time (or last modified time if ctime getting fails on *nix)
+    :returns: a file creation time
+                (or last modified time if ctime getting fails on *nix)
     :rtype: str
     """
     st_info = os.stat(path)
@@ -48,21 +50,24 @@ def get_ctime(path):
 
     return datetime.fromtimestamp(t).strftime("%y%m%d%H%M%S")
 
-def get_replist(path, ext = DEFAULT_EXT):
+
+def get_replist(path, ext=DEFAULT_EXT):
     """ Get a list of reports (non-recursively)
 
     :param path: The location of reports
     :type path: str
     :param ext: The extension of reports files (optional (default=DEFAULT_EXT))
     :type ext: str
-    :returns: a dictionary containing pairs of absolute filename and creation time of the report
+    :returns: a dictionary containing pairs of absolute filename
+                and creation time of the report
     :rtype: dict
     """
     if not os.path.exists(path):
         return {}
 
-    return { f: get_ctime(f) for f in (join(path, f) for f in os.listdir(path)) 
-             if isfile(f) and splitext(f)[1] == ext }
+    return {f: get_ctime(f) for f in (join(path, f) for f in os.listdir(path))
+            if isfile(f) and splitext(f)[1] == ext}
+
 
 def filter_by_date(lst, date):
     """ Filter reports list by date
@@ -76,7 +81,7 @@ def filter_by_date(lst, date):
     """
     date = date.replace('_', '')
 
-    if not lst or not date: 
+    if not lst or not date:
         return []
 
     if not validate_dt(date):
@@ -84,7 +89,8 @@ def filter_by_date(lst, date):
 
     return [k for k, v in lst.items() if v[:len(date)] == date]
 
-def get_reports_by_date(path, date, ext = DEFAULT_EXT):
+
+def get_reports_by_date(path, date, ext=DEFAULT_EXT):
     """ Get reports filtered by date in an HTTP response
 
     :param path: The location of reports
@@ -111,11 +117,12 @@ def get_reports_by_date(path, date, ext = DEFAULT_EXT):
     print('Content-Length: %d' % getsize(arch_name))
     print('Content-Type: application/zip')
     print(flush=True)
-    
-    with open(arch_name,'rb') as zipfile:
+
+    with open(arch_name, 'rb') as zipfile:
         copyfileobj(zipfile, sys.stdout.buffer)
 
-def get_last_report(path, ext = DEFAULT_EXT):
+
+def get_last_report(path, ext=DEFAULT_EXT):
     """ Get last created report in an HTTP response
 
     :param path: The location of report
@@ -127,7 +134,9 @@ def get_last_report(path, ext = DEFAULT_EXT):
     if not lst:
         bad_request(404, msg='No Reports')
 
-    last_report = sorted(lst.items(), key=lambda x: (x[1], x[0]), reverse=True)[0][0]
+    last_report = sorted(lst.items(),
+                         key=lambda x: (x[1], x[0]),
+                         reverse=True)[0][0]
     report_name = basename(last_report)
 
     print('Cache-Control: no-cache')
@@ -137,8 +146,8 @@ def get_last_report(path, ext = DEFAULT_EXT):
     print('Content-Length: %d' % getsize(last_report))
     print('Content-Type: application/octet-stream')
     print(flush=True)
-    
-    with open(last_report,'rb') as file:
+
+    with open(last_report, 'rb') as file:
         copyfileobj(file, sys.stdout.buffer)
 
 
