@@ -30,4 +30,7 @@ $HTTP["url"] =~ "^/cgi-bin" {
 
 3. Скопировать папки cgi-bin/, css/ и файл sample.html в server_root lighttpd (посмотреть в lighttpd.conf).
 
-4. Проверить работу сервера из браузера по адресу http://127.0.0.1:8080/sample.html
+4. Добавить исполняемый флаг скрипту cmd:
+```chmod +x cgi-bin/cmd```
+
+5. Проверить работу сервера из браузера по адресу http://127.0.0.1:8080/sample.html
