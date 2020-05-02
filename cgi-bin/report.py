@@ -1,8 +1,8 @@
 import sys
+import os
 import time
 
 from datetime import datetime
-from os import listdir, stat, path as rpath
 from os.path import isfile, join, splitext, getsize, basename
 from shutil import copyfileobj
 from zipfile import ZipFile
@@ -10,20 +10,28 @@ from zipfile import ZipFile
 from bad_request import bad_request
 from utils import validate_dt
 
-DEFAULT_EXT = '.xml'
+DEFAULT_DAT = 'last'
+DEFAULT_EXT = 'xml'
+
 
 def report(**kwargs):
-    #reply = get_reports_by_date('/tmp', '200301', '.pdf')
+    """ Take HTTP response with asked reports
 
-    reply = get_last_report('/tmp', '.txt')
+    :param **kwargs: Parameters of GET request
+    :type **kwargs: dict
+    """
+    path = os.getenv('CGI_REPORTS_PATH', None)
+    if not path:
+        bad_request(msg='Bad Path')
 
-    return reply
+    date = kwargs.get('date', DEFAULT_DAT)
+    ext = '.%s' % kwargs.get('ext', DEFAULT_EXT)
 
+    if (date == 'last'):
+        get_last_report(path, ext)
+    else:
+        get_reports_by_date(path, date, ext)
 
-
-
-
-# -------------------------------------------
 def get_ctime(path):
     """ Get file creation time 
 
@@ -32,7 +40,7 @@ def get_ctime(path):
     :returns: a file creation time (or last modified time if ctime getting fails on *nix)
     :rtype: str
     """
-    st_info = stat(path)
+    st_info = os.stat(path)
     try:
         t = st_info.st_birthtime
     except AttributeError:
@@ -50,10 +58,10 @@ def get_replist(path, ext = DEFAULT_EXT):
     :returns: a dictionary containing pairs of absolute filename and creation time of the report
     :rtype: dict
     """
-    if not rpath.exists(path):
+    if not os.path.exists(path):
         return {}
 
-    return { f: get_ctime(f) for f in (join(path, f) for f in listdir(path)) 
+    return { f: get_ctime(f) for f in (join(path, f) for f in os.listdir(path)) 
              if isfile(f) and splitext(f)[1] == ext }
 
 def filter_by_date(lst, date):
@@ -155,4 +163,3 @@ if __name__ == '__main__':
     for f in filtered:
         print(f)
     print('-----------------\n')
-
