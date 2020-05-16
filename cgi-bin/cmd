@@ -4,6 +4,7 @@ import cgi
 # import cgitb
 
 from bad_request import bad_request
+from echo import echo
 from report import report
 
 
@@ -21,7 +22,8 @@ def field_storage_to_dict(fs):
 # cgitb.enable()
 
 actions = {
-    'report': report
+    'report': report,
+    'echo': echo
 }
 
 params = field_storage_to_dict(cgi.FieldStorage())
